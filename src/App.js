@@ -1,8 +1,10 @@
 import "./App.css";
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import LoginPage from "./pages/LoginPage";
 import { db, app, auth } from "./firebase";
+import LoadingPage from "./pages/LoadingPage";
+import HomePage from "./pages/HomePage";
+import TopBar from "./components/TopBar";
 import { signInAnonymously, onAuthStateChanged } from "firebase/auth";
 import {
   doc,
@@ -13,6 +15,8 @@ import {
   onSnapshot,
 } from "firebase/firestore";
 import { UserContext, SettingsContext } from "./context";
+
+import CssBaseline from "@mui/material/CssBaseline";
 
 function App() {
   const [reg, setReg] = useState(0);
@@ -35,7 +39,6 @@ function App() {
             alert("Unable to connect to the server. Please try again later.");
           });
         }
-        // User is signed out.
       }
     });
   }, []);
@@ -74,36 +77,25 @@ function App() {
   }, [authUser]);
 
   return (
-    <BrowserRouter>
-      <div className="App">
-      <UserContext.Provider value={user}>
-        {//insert routes here
-        }
-      </UserContext.Provider>
-        {/* <Routes>
-            <Route
-              path='/login'
-              element={
-                <Form
-                  title="Login"
-                  setEmail={setEmail}
-                  setPassword={setPassword}
-                  handleAction={() => handleAction()}
-                />}
-            />
-            <Route
-              path='/register'
-              element={
-                <Form
-                  title="Register"
-                  setEmail={setEmail}
-                  setPassword={setPassword}
-                  handleAction={() => handleAction()}
-                />}
-            />
-          </Routes> */}
-      </div>
-    </BrowserRouter>
+    <div>
+      <BrowserRouter>
+        <CssBaseline />
+        <div className="App">
+          {!user ? (
+            <LoadingPage />
+          ) : (
+            <>
+              <TopBar user={user} />
+              <UserContext.Provider value={user}>
+                <Routes>
+                  <Route path="/" element={<HomePage />} />
+                </Routes>
+              </UserContext.Provider>
+            </>
+          )}
+        </div>
+      </BrowserRouter>
+    </div>
   );
 }
 export default App;
